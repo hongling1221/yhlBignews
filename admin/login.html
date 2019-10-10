@@ -55,6 +55,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+  <script src="./libs/http.js"></script>
   <script>
     $(function () {
       /* 1.登录按钮点击事件
@@ -71,11 +72,12 @@
           $('.modal-body>p').text('请输入账号密码');
           //弹出模态框
           $('#myModal').modal();
+          return;
         }
         //1.2 获取用户名和密码
         //1.3 ajax发送请求
         $.ajax({
-          url: 'http://localhost:8080/api/v1/admin/user/login',
+          url: BigNew.user_login,
           type: 'post',
           dataType: 'json',
           data: {
@@ -87,7 +89,7 @@
               $('.modal-body>p').text('登录成功');
               //弹出模态框
               $('#myModal').modal();
-
+               
               //(3)用户点击确认之后跳转首页 (用户点击确认，模态框消失之后触发)
               $('#myModal').on('hidden.bs.modal', function (e) {
                 // do something...
