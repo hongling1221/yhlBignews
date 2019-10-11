@@ -73,8 +73,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default cancel">取消</button>
-                    <button type="button" class="btn btn-primary confirm">确认</button>
+                    <button type="button" class="btn btn-default cancel btn-cancel" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary confirm btn-confirm">新增</button>
                 </div>
             </div>
         </div>
@@ -86,8 +86,9 @@
             <td>{{v.name}}</td>
             <td>{{v.slug}}</td>
             <td class="text-center">
-                <a href="javascript:void(0);" data-toggle="modal" class=" btn btn-info btn-xs">编辑</a>
-                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                <a href="javascript:void(0);"  data-id="{{v.id}}" data-toggle="modal" class=" btn btn-info btn-xs" data-toggle="modal"
+                data-target="#myModal">编辑</a>
+                <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -109,8 +110,104 @@
             });
 
             //新增分类
-            //1.点击新增按钮弹出模态框
+            /* 
+         1.给新增和编辑按钮添加  data-toggle="modal" data-target="#myModal"
+             作用 ： 点击的时候弹出模态框
+         2.给模态框注册 shown.bs.modal 事件 ： 模态框出现之前会触发
+             作用 : 获取 事件对象 e.relatedTarget 获取模态框事件触发源
+         3.给模态框确认按钮注册点击事件
+             判断按钮的文字 ： 新增  |  编辑
+         4.给模态框取消按钮注册点击事件
+             清空表单  原生DOM.reset()
+         */
 
+            //注册事件 : 模态框出来之前会触发
+            $('#myModal').on('shown.bs.modal', function (e) {
+                //模态框事件触发源 DOM对象
+                if (e.relatedTarget == $('#xinzengfenlei')[0]) {
+                    //修改模态框文本
+                    $('.btn-confirm').text('新增')
+                } else {
+                    $('.btn-confirm').text('编辑')
+                    $('#exampleModalLabel').text('编辑分类');
+                    //传递文章name
+                    $('#recipient-name').val($(e.relatedTarget).parent().prev().prev().text());
+                     //传递文章slug
+                    $('#message-text').val($(e.relatedTarget).parent().prev().text());
+                    //传递文章id
+                    $('.btn-confirm').attr('data-id',$(e.relatedTarget).attr('data-id'))
+                }
+            })
+            //给最外面的新增分类按钮注册点击事件 修改显示文本
+            $('#xinzengfenlei').on('click', function () {
+                $('#myModal .modal-title').text('新增分类')
+            });
+
+            //新增点击事件,ajax请求新增文章列表
+            $('.btn-confirm').on('click', function () {
+                console.log('新增');
+                if ($(this).text() == '新增') {//如果文字是新增,执行新增代码逻辑
+                    $.ajax({
+                        url: BigNew.category_add,
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name: $('#recipient-name').val(),
+                            slug: $('#message-text').val()
+                        },
+                        success: function (backData) {
+                            console.log(backData);
+                            if (backData.code == 201) {
+                                alert('新增成功');
+                               window.location.reload();
+                            }
+                        }
+                    });
+                } else {//如果文本是编辑,执行编辑代码逻辑
+                    console.log('编辑');
+                    $.ajax({
+                        url:BigNew.category_edit,
+                        type:'post',
+                        dataType:'json',
+                        data:{
+                            name:$('#recipient-name').val(),
+                            slug:$('#message-text').val(),
+                            id:$(this).attr('data-id')
+                        },
+                        success: function(backData){
+                          console.log(backData);
+                           if(backData.code == 200){
+                               alert('编辑成功')
+                               window.location.reload();
+                           }
+                        }
+                    });
+                } 
+            });
+            //模态框取消按钮
+              $('.btn-cancel').on('click',function(){
+                  //表单清空
+                $('.modal-body>form')[0].reset();
+              });
+
+              //删除
+              $('.table>tbody').on('click','.btn-delete',function(){
+                  console.log('111');
+                  var id = $(this).attr('data-id');
+                  $.ajax({
+                      url:BigNew.category_delete,
+                      type:'post',
+                      dataType:'json',
+                      data:{id:id},
+                      success: function(backData){
+                            // console.log(backData);
+                            if(backData.code == 204){
+                                alert('删除成功')
+                                window.location.reload();
+                            }
+                      }
+                  });
+              })
         });
     </script>
 
