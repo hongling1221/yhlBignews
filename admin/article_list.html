@@ -142,6 +142,11 @@
                         }
                      }
                  });
+             });
+
+             //发布 a标签href跳转
+             $('#release_btn').on('click',function(){
+                 $('.level02>li:eq(1)',window.parent.document).trigger('click')
              })
         })
     </script>
