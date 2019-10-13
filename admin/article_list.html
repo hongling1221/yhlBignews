@@ -33,8 +33,8 @@
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
                             <option value="">所有状态</option>
-                            <option value="草稿">草稿</option>
-                            <option value="已发布">已发布</option>
+                            <option>草稿</option>
+                            <option>已发布</option>
                         </select>
                         <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
                     </form>
@@ -78,7 +78,7 @@
     <script id="temp_list" type="text/html">
         <option value="">所有分类</option>
       {{each data v}}
-        <option>{{v.name}}</option>
+        <option value="{{v.id}}">{{v.name}}</option>
       {{/each}}
     </script>
     <!-- 文章列表模板 -->
@@ -119,12 +119,36 @@
                     perpage:10
                  },
                  success: function(backData){
-                   console.log(backData);
+                //    console.log(backData);
                    $('.table>tbody').html(template('cat_list',backData));
                  }
              });
+               
+             //筛选按钮点击事件
+             $('#btnSearch').on('click',function(e){
+                 e.preventDefault();
 
-
+                 //获取文章类别id和状态
+                 var catId = $('#selCategory').val();
+                 var state = $('#selStatus').val();
+                 $.ajax({
+                     url:BigNew.article_query,
+                     type:'get',
+                     dataType:'json',
+                     data:{
+                         type:catId,
+                         state:state,
+                         page:1,
+                         perpage:10
+                     },
+                     success: function(backData){
+                       console.log(backData);
+                       if(backData.code == 200){
+                        $('tbody').html(template('cat_list',backData));
+                       }
+                     }
+                 });
+             })
 
              //删除文章
              $('.table>tbody').on('click','.delete',function(){
