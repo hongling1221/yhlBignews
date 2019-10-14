@@ -165,7 +165,7 @@
           {{else if v.state == '待审核'}}
           <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-success btn-xs btn-pass">批准</a>
           {{/if}}
-          <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-dalete">删除</a>
+          <a href="javascript:void(0);;" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-delete">删除</a>
         </td>
       </tr>
        {{/each}}
@@ -220,16 +220,49 @@
     };
 
     //拒绝
-    $('body').on('click', 'btn-reject', function () {
-       
+    $('body').on('click','.btn-reject', function () {
+      var id = $(this).attr('data-id');
+       $.ajax({
+         url:BigNew.comment_reject,
+         type:'post',
+         dataType:'json',
+         data:{id:id},
+         success: function(backData){
+          //  console.log(backData);
+          alert('审核不通过')
+          window.location.reload();
+         }
+       });
     });
     //审核
-    $('body').on('click', 'btn-pass', function () {
-
+    $('body').on('click','.btn-pass', function () {
+      var id = $(this).attr('data-id');
+       $.ajax({
+         url:BigNew.comment_pass,
+         type:'post',
+         dataType:'json',
+         data:{id:id},
+         success: function(backData){
+          //  console.log(backData);
+          alert('审核通过')
+          window.location.reload();
+         }
+       });
     });
     //删除
-    $('body').on('click', 'btn-delete', function () {
-
+    $('body').on('click','.btn-delete', function () {
+      var id = $(this).attr('data-id');
+       $.ajax({
+         url:BigNew.comment_delete,
+         type:'post',
+         dataType:'json',
+         data:{id:id},
+         success: function(backData){
+          //  console.log(backData);
+          alert('删除成功')
+          window.location.reload();
+         }
+       });
     });
   </script>
 </body>
